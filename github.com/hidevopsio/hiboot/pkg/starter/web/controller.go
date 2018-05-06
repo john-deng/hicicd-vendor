@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package utils
+package web
 
-import (
-	"reflect"
-)
 
-func NewReflectType(st interface{}) interface{} {
-	ct := reflect.TypeOf(st)
-	co := reflect.New(ct)
-	cp := co.Elem().Addr().Interface()
-	return cp
+type Controller struct {
+	ContextMapping string
+	AuthType       string
+}
+
+func (c *Controller) Init()  {
+	c.AuthType = AuthTypeAnon
 }

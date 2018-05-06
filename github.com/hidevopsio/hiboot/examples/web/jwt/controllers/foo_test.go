@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package utils
+// Line 1: main package
+package controllers
 
 import (
-	"reflect"
+	"testing"
+	"net/http"
+	"github.com/hidevopsio/hiboot/pkg/starter/web"
 )
 
-func NewReflectType(st interface{}) interface{} {
-	ct := reflect.TypeOf(st)
-	co := reflect.New(ct)
-	cp := co.Elem().Addr().Interface()
-	return cp
+func TestFooSayHello(t *testing.T) {
+	web.NewTestApplication(t, new(FooController)).
+		Get("/foo/sayHello").
+		Expect().Status(http.StatusOK)
 }

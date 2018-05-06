@@ -24,7 +24,7 @@ import (
 )
 
 func TestGetWorkingDir(t *testing.T) {
-	wd := GetWorkingDir("")
+	wd := GetWorkDir()
 	expected, err := os.Getwd()
 	assert.Equal(t, nil, err)
 	assert.Equal(t, expected, wd)
@@ -40,3 +40,17 @@ func TestWriteFile(t *testing.T) {
 	assert.Equal(t, len(in), n)
 }
 
+func TestListFiles(t *testing.T) {
+	var files []string
+
+	root := "./"
+	err := filepath.Walk(root, Visit(&files))
+	assert.Equal(t, nil, err)
+
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range files {
+		log.Println(file)
+	}
+}
