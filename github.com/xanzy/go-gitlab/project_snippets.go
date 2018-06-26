@@ -1,5 +1,5 @@
 //
-// Copyright 2017, Sander van Harmelen
+// Copyright 2015, Sander van Harmelen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,25 +20,56 @@ import (
 	"bytes"
 	"fmt"
 	"net/url"
+	"time"
 )
 
 // ProjectSnippetsService handles communication with the project snippets
 // related methods of the GitLab API.
 //
-// GitLab API docs: https://docs.gitlab.com/ce/api/project_snippets.html
+// GitLab API docs:
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md
 type ProjectSnippetsService struct {
 	client *Client
 }
 
-// ListProjectSnippetsOptions represents the available ListSnippets() options.
+// Snippet represents a GitLab project snippet.
 //
-// GitLab API docs: https://docs.gitlab.com/ce/api/project_snippets.html#list-snippets
-type ListProjectSnippetsOptions ListOptions
+// GitLab API docs:
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md
+type Snippet struct {
+	ID       int    `json:"id"`
+	Title    string `json:"title"`
+	FileName string `json:"file_name"`
+	Author   struct {
+		ID        int        `json:"id"`
+		Username  string     `json:"username"`
+		Email     string     `json:"email"`
+		Name      string     `json:"name"`
+		State     string     `json:"state"`
+		CreatedAt *time.Time `json:"created_at"`
+	} `json:"author"`
+	ExpiresAt *time.Time `json:"expires_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
+	CreatedAt *time.Time `json:"created_at"`
+}
+
+func (s Snippet) String() string {
+	return Stringify(s)
+}
+
+// ListSnippetsOptions represents the available ListSnippets() options.
+//
+// GitLab API docs:
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#list-snippets
+type ListSnippetsOptions struct {
+	ListOptions
+}
 
 // ListSnippets gets a list of project snippets.
 //
-// GitLab API docs: https://docs.gitlab.com/ce/api/project_snippets.html#list-snippets
-func (s *ProjectSnippetsService) ListSnippets(pid interface{}, opt *ListProjectSnippetsOptions, options ...OptionFunc) ([]*Snippet, *Response, error) {
+// GitLab API docs:
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#list-snippets
+func (s *ProjectSnippetsService) ListSnippets(pid interface{}, opt *ListSnippetsOptions, options ...OptionFunc) ([]*Snippet, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
@@ -62,7 +93,7 @@ func (s *ProjectSnippetsService) ListSnippets(pid interface{}, opt *ListProjectS
 // GetSnippet gets a single project snippet
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/project_snippets.html#single-snippet
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#single-snippet
 func (s *ProjectSnippetsService) GetSnippet(pid interface{}, snippet int, options ...OptionFunc) (*Snippet, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
@@ -84,24 +115,23 @@ func (s *ProjectSnippetsService) GetSnippet(pid interface{}, snippet int, option
 	return ps, resp, err
 }
 
-// CreateProjectSnippetOptions represents the available CreateSnippet() options.
+// CreateSnippetOptions represents the available CreateSnippet() options.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/project_snippets.html#create-new-snippet
-type CreateProjectSnippetOptions struct {
-	Title       *string          `url:"title,omitempty" json:"title,omitempty"`
-	FileName    *string          `url:"file_name,omitempty" json:"file_name,omitempty"`
-	Description *string          `url:"description,omitempty" json:"description,omitempty"`
-	Code        *string          `url:"code,omitempty" json:"code,omitempty"`
-	Visibility  *VisibilityValue `url:"visibility,omitempty" json:"visibility,omitempty"`
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#create-new-snippet
+type CreateSnippetOptions struct {
+	Title           *string               `url:"title,omitempty" json:"title,omitempty"`
+	FileName        *string               `url:"file_name,omitempty" json:"file_name,omitempty"`
+	Code            *string               `url:"code,omitempty" json:"code,omitempty"`
+	VisibilityLevel *VisibilityLevelValue `url:"visibility_level,omitempty" json:"visibility_level,omitempty"`
 }
 
 // CreateSnippet creates a new project snippet. The user must have permission
 // to create new snippets.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/project_snippets.html#create-new-snippet
-func (s *ProjectSnippetsService) CreateSnippet(pid interface{}, opt *CreateProjectSnippetOptions, options ...OptionFunc) (*Snippet, *Response, error) {
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#create-new-snippet
+func (s *ProjectSnippetsService) CreateSnippet(pid interface{}, opt *CreateSnippetOptions, options ...OptionFunc) (*Snippet, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
@@ -122,24 +152,23 @@ func (s *ProjectSnippetsService) CreateSnippet(pid interface{}, opt *CreateProje
 	return ps, resp, err
 }
 
-// UpdateProjectSnippetOptions represents the available UpdateSnippet() options.
+// UpdateSnippetOptions represents the available UpdateSnippet() options.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/project_snippets.html#update-snippet
-type UpdateProjectSnippetOptions struct {
-	Title       *string          `url:"title,omitempty" json:"title,omitempty"`
-	FileName    *string          `url:"file_name,omitempty" json:"file_name,omitempty"`
-	Description *string          `url:"description,omitempty" json:"description,omitempty"`
-	Code        *string          `url:"code,omitempty" json:"code,omitempty"`
-	Visibility  *VisibilityValue `url:"visibility,omitempty" json:"visibility,omitempty"`
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#update-snippet
+type UpdateSnippetOptions struct {
+	Title           *string               `url:"title,omitempty" json:"title,omitempty"`
+	FileName        *string               `url:"file_name,omitempty" json:"file_name,omitempty"`
+	Code            *string               `url:"code,omitempty" json:"code,omitempty"`
+	VisibilityLevel *VisibilityLevelValue `url:"visibility_level,omitempty" json:"visibility_level,omitempty"`
 }
 
 // UpdateSnippet updates an existing project snippet. The user must have
 // permission to change an existing snippet.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/project_snippets.html#update-snippet
-func (s *ProjectSnippetsService) UpdateSnippet(pid interface{}, snippet int, opt *UpdateProjectSnippetOptions, options ...OptionFunc) (*Snippet, *Response, error) {
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#update-snippet
+func (s *ProjectSnippetsService) UpdateSnippet(pid interface{}, snippet int, opt *UpdateSnippetOptions, options ...OptionFunc) (*Snippet, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
@@ -165,7 +194,7 @@ func (s *ProjectSnippetsService) UpdateSnippet(pid interface{}, snippet int, opt
 // code.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/project_snippets.html#delete-snippet
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#delete-snippet
 func (s *ProjectSnippetsService) DeleteSnippet(pid interface{}, snippet int, options ...OptionFunc) (*Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
@@ -184,7 +213,7 @@ func (s *ProjectSnippetsService) DeleteSnippet(pid interface{}, snippet int, opt
 // SnippetContent returns the raw project snippet as plain text.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/project_snippets.html#snippet-content
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/project_snippets.md#snippet-content
 func (s *ProjectSnippetsService) SnippetContent(pid interface{}, snippet int, options ...OptionFunc) ([]byte, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {

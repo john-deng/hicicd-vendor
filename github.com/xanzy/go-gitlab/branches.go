@@ -1,5 +1,5 @@
 //
-// Copyright 2017, Sander van Harmelen
+// Copyright 2015, Sander van Harmelen
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +24,16 @@ import (
 // BranchesService handles communication with the branch related methods
 // of the GitLab API.
 //
-// GitLab API docs: https://docs.gitlab.com/ce/api/branches.html
+// GitLab API docs:
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md
 type BranchesService struct {
 	client *Client
 }
 
 // Branch represents a GitLab branch.
 //
-// GitLab API docs: https://docs.gitlab.com/ce/api/branches.html
+// GitLab API docs:
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md
 type Branch struct {
 	Commit             *Commit `json:"commit"`
 	Name               string  `json:"name"`
@@ -48,14 +50,16 @@ func (b Branch) String() string {
 // ListBranchesOptions represents the available ListBranches() options.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#list-repository-branches
-type ListBranchesOptions ListOptions
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#list-repository-branches
+type ListBranchesOptions struct {
+	ListOptions
+}
 
 // ListBranches gets a list of repository branches from a project, sorted by
 // name alphabetically.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#list-repository-branches
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#list-repository-branches
 func (s *BranchesService) ListBranches(pid interface{}, opts *ListBranchesOptions, options ...OptionFunc) ([]*Branch, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
@@ -80,13 +84,13 @@ func (s *BranchesService) ListBranches(pid interface{}, opts *ListBranchesOption
 // GetBranch gets a single project repository branch.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#get-single-repository-branch
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#get-single-repository-branch
 func (s *BranchesService) GetBranch(pid interface{}, branch string, options ...OptionFunc) (*Branch, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
 	}
-	u := fmt.Sprintf("projects/%s/repository/branches/%s", url.QueryEscape(project), url.QueryEscape(branch))
+	u := fmt.Sprintf("projects/%s/repository/branches/%s", url.QueryEscape(project), branch)
 
 	req, err := s.client.NewRequest("GET", u, nil, options)
 	if err != nil {
@@ -105,7 +109,7 @@ func (s *BranchesService) GetBranch(pid interface{}, branch string, options ...O
 // ProtectBranchOptions represents the available ProtectBranch() options.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#protect-repository-branch
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#protect-repository-branch
 type ProtectBranchOptions struct {
 	DevelopersCanPush  *bool `url:"developers_can_push,omitempty" json:"developers_can_push,omitempty"`
 	DevelopersCanMerge *bool `url:"developers_can_merge,omitempty" json:"developers_can_merge,omitempty"`
@@ -116,13 +120,13 @@ type ProtectBranchOptions struct {
 // still returns a 200 OK status code.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#protect-repository-branch
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#protect-repository-branch
 func (s *BranchesService) ProtectBranch(pid interface{}, branch string, opts *ProtectBranchOptions, options ...OptionFunc) (*Branch, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
 	}
-	u := fmt.Sprintf("projects/%s/repository/branches/%s/protect", url.QueryEscape(project), url.QueryEscape(branch))
+	u := fmt.Sprintf("projects/%s/repository/branches/%s/protect", url.QueryEscape(project), branch)
 
 	req, err := s.client.NewRequest("PUT", u, opts, options)
 	if err != nil {
@@ -143,13 +147,13 @@ func (s *BranchesService) ProtectBranch(pid interface{}, branch string, opts *Pr
 // still returns a 200 OK status code.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#unprotect-repository-branch
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#unprotect-repository-branch
 func (s *BranchesService) UnprotectBranch(pid interface{}, branch string, options ...OptionFunc) (*Branch, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
 	}
-	u := fmt.Sprintf("projects/%s/repository/branches/%s/unprotect", url.QueryEscape(project), url.QueryEscape(branch))
+	u := fmt.Sprintf("projects/%s/repository/branches/%s/unprotect", url.QueryEscape(project), branch)
 
 	req, err := s.client.NewRequest("PUT", u, nil, options)
 	if err != nil {
@@ -168,16 +172,16 @@ func (s *BranchesService) UnprotectBranch(pid interface{}, branch string, option
 // CreateBranchOptions represents the available CreateBranch() options.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#create-repository-branch
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#create-repository-branch
 type CreateBranchOptions struct {
-	Branch *string `url:"branch,omitempty" json:"branch,omitempty"`
-	Ref    *string `url:"ref,omitempty" json:"ref,omitempty"`
+	BranchName *string `url:"branch_name,omitempty" json:"branch_name,omitempty"`
+	Ref        *string `url:"ref,omitempty" json:"ref,omitempty"`
 }
 
 // CreateBranch creates branch from commit SHA or existing branch.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#create-repository-branch
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#create-repository-branch
 func (s *BranchesService) CreateBranch(pid interface{}, opt *CreateBranchOptions, options ...OptionFunc) (*Branch, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
@@ -202,13 +206,13 @@ func (s *BranchesService) CreateBranch(pid interface{}, opt *CreateBranchOptions
 // DeleteBranch deletes an existing branch.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#delete-repository-branch
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#delete-repository-branch
 func (s *BranchesService) DeleteBranch(pid interface{}, branch string, options ...OptionFunc) (*Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, err
 	}
-	u := fmt.Sprintf("projects/%s/repository/branches/%s", url.QueryEscape(project), url.QueryEscape(branch))
+	u := fmt.Sprintf("projects/%s/repository/branches/%s", url.QueryEscape(project), branch)
 
 	req, err := s.client.NewRequest("DELETE", u, nil, options)
 	if err != nil {
@@ -221,7 +225,7 @@ func (s *BranchesService) DeleteBranch(pid interface{}, branch string, options .
 // DeleteMergedBranches deletes all branches that are merged into the project's default branch.
 //
 // GitLab API docs:
-// https://docs.gitlab.com/ce/api/branches.html#delete-merged-branches
+// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/branches.md#delete-merged-branches
 func (s *BranchesService) DeleteMergedBranches(pid interface{}, options ...OptionFunc) (*Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
