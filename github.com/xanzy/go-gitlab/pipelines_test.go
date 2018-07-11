@@ -16,13 +16,12 @@ func TestListProjectPipelines(t *testing.T) {
 		fmt.Fprint(w, `[{"id":1},{"id":2}]`)
 	})
 
-	opt := &ListProjectPipelinesOptions{Ref: String("master")}
-	piplines, _, err := client.Pipelines.ListProjectPipelines(1, opt)
+	piplines, _, err := client.Pipelines.ListProjectPipelines(1)
 	if err != nil {
 		t.Errorf("Pipelines.ListProjectPipelines returned error: %v", err)
 	}
 
-	want := PipelineList{{ID: 1}, {ID: 2}}
+	want := []*Pipeline{{ID: 1}, {ID: 2}}
 	if !reflect.DeepEqual(want, piplines) {
 		t.Errorf("Pipelines.ListProjectPipelines returned %+v, want %+v", piplines, want)
 	}
@@ -54,6 +53,7 @@ func TestCreatePipeline(t *testing.T) {
 
 	mux.HandleFunc("/projects/1/pipeline", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
+		testJSONBody(t, r, values{"ref": "master"})
 		fmt.Fprint(w, `{"id":1, "status":"pending"}`)
 	})
 

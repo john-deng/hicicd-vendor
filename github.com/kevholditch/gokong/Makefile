@@ -8,7 +8,7 @@ default: build test
 build: fmtcheck errcheck vet
 	go install
 
-test: goimportscheck
+test: fmtcheck
 	go test -v ./...
 
 vet:
@@ -20,17 +20,14 @@ vet:
 		exit 1; \
 	fi
 
-goimports:
-	goimports -w $(GOFMT_FILES)
+fmt:
+	gofmt -w $(GOFMT_FILES)
 
-goimportscheck:
-	@sh -c "'$(CURDIR)/scripts/goimportscheck.sh'"
+fmtcheck:
+	@sh -c "'$(CURDIR)/scripts/gofmtcheck.sh'"
 
 errcheck:
 	@sh -c "'$(CURDIR)/scripts/errcheck.sh'"
-
-install-goimports:
-	@go get golang.org/x/tools/cmd/goimports
 
 vendor-status:
 	@govendor status

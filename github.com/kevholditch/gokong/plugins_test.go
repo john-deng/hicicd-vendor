@@ -1,10 +1,9 @@
 package gokong
 
 import (
-	"testing"
-
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func Test_PluginsGetById(t *testing.T) {
@@ -66,19 +65,19 @@ func Test_PluginsCreateForAllApisAndConsumers(t *testing.T) {
 func Test_PluginsCreateForASpecificApi(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -89,7 +88,7 @@ func Test_PluginsCreateForASpecificApi(t *testing.T) {
 
 	pluginRequest := &PluginRequest{
 		Name:  "basic-auth",
-		ApiId: *createdApi.Id,
+		ApiId: createdApi.Id,
 		Config: map[string]interface{}{
 			"hide_credentials": true,
 		},
@@ -103,7 +102,7 @@ func Test_PluginsCreateForASpecificApi(t *testing.T) {
 	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
 	assert.True(t, createdPlugin.Enabled)
 	assert.Equal(t, "", createdPlugin.ConsumerId)
-	assert.Equal(t, *createdApi.Id, createdPlugin.ApiId)
+	assert.Equal(t, createdApi.Id, createdPlugin.ApiId)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
 
@@ -162,19 +161,19 @@ func Test_PluginsCreateForASpecificApiAndConsumer(t *testing.T) {
 	assert.NotNil(t, createdConsumer)
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	createdApi, err := client.Apis().Create(apiRequest)
@@ -182,7 +181,7 @@ func Test_PluginsCreateForASpecificApiAndConsumer(t *testing.T) {
 	pluginRequest := &PluginRequest{
 		Name:       "response-ratelimiting",
 		ConsumerId: createdConsumer.Id,
-		ApiId:      *createdApi.Id,
+		ApiId:      createdApi.Id,
 		Config: map[string]interface{}{
 			"limits.sms.minute": 20,
 		},
@@ -196,7 +195,7 @@ func Test_PluginsCreateForASpecificApiAndConsumer(t *testing.T) {
 	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
 	assert.True(t, createdPlugin.Enabled)
 	assert.Equal(t, createdConsumer.Id, createdPlugin.ConsumerId)
-	assert.Equal(t, *createdApi.Id, createdPlugin.ApiId)
+	assert.Equal(t, createdApi.Id, createdPlugin.ApiId)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
 
@@ -455,19 +454,19 @@ func Test_PluginsListFilteredByName(t *testing.T) {
 func Test_PluginsListFilteredByApiId(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -478,7 +477,7 @@ func Test_PluginsListFilteredByApiId(t *testing.T) {
 
 	pluginRequest := &PluginRequest{
 		Name:  "rate-limiting",
-		ApiId: *createdApi.Id,
+		ApiId: createdApi.Id,
 		Config: map[string]interface{}{
 			"minute": float64(22),
 			"hour":   float64(111),
@@ -490,19 +489,19 @@ func Test_PluginsListFilteredByApiId(t *testing.T) {
 	assert.NotNil(t, createdPlugin)
 
 	apiRequest2 := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	createdApi2, err := client.Apis().Create(apiRequest2)
@@ -512,7 +511,7 @@ func Test_PluginsListFilteredByApiId(t *testing.T) {
 
 	pluginRequest2 := &PluginRequest{
 		Name:  "response-ratelimiting",
-		ApiId: *createdApi2.Id,
+		ApiId: createdApi2.Id,
 		Config: map[string]interface{}{
 			"limits.sms.minute": 20,
 		},
@@ -523,7 +522,7 @@ func Test_PluginsListFilteredByApiId(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdPlugin2)
 
-	results, err := client.Plugins().ListFiltered(&PluginFilter{ApiId: *createdApi.Id})
+	results, err := client.Plugins().ListFiltered(&PluginFilter{ApiId: createdApi.Id})
 
 	assert.Nil(t, err)
 	assert.NotNil(t, results)

@@ -62,16 +62,19 @@ func TestCreateBuildVariable(t *testing.T) {
 
 	mux.HandleFunc("/projects/1/variables", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		fmt.Fprintf(w, `{"key":"%s","value":"%s", "protected": false}`, myKey, myValue)
+		testJSONBody(t, r, values{
+			"key":   myKey,
+			"value": myValue,
+		})
+		fmt.Fprintf(w, `{"key":"%s","value":"%s"}`, myKey, myValue)
 	})
 
-	opt := &CreateBuildVariableOptions{String(myKey), String(myValue), Bool(false)}
-	variable, _, err := client.BuildVariables.CreateBuildVariable(1, opt)
+	variable, _, err := client.BuildVariables.CreateBuildVariable(1, myKey, myValue)
 	if err != nil {
 		t.Errorf("CreateBuildVariable returned error: %v", err)
 	}
 
-	want := &BuildVariable{Key: myKey, Value: myValue, Protected: false}
+	want := &BuildVariable{Key: myKey, Value: myValue}
 	if !reflect.DeepEqual(want, variable) {
 		t.Errorf("CreateBuildVariable returned %+v, want %+v", variable, want)
 	}
@@ -83,16 +86,19 @@ func TestUpdateBuildVariable(t *testing.T) {
 
 	mux.HandleFunc("/projects/1/variables/"+myKey, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		fmt.Fprintf(w, `{"key":"%s","value":"%s", "protected": false}`, myKey, myNewValue)
+		testJSONBody(t, r, values{
+			"key":   myKey,
+			"value": myNewValue,
+		})
+		fmt.Fprintf(w, `{"key":"%s","value":"%s"}`, myKey, myNewValue)
 	})
 
-	opt := &UpdateBuildVariableOptions{String(myKey), String(myNewValue), Bool(false)}
-	variable, _, err := client.BuildVariables.UpdateBuildVariable(1, myKey, opt)
+	variable, _, err := client.BuildVariables.UpdateBuildVariable(1, myKey, myNewValue)
 	if err != nil {
 		t.Errorf("UpdateBuildVariable returned error: %v", err)
 	}
 
-	want := &BuildVariable{Key: myKey, Value: myNewValue, Protected: false}
+	want := &BuildVariable{Key: myKey, Value: myNewValue}
 	if !reflect.DeepEqual(want, variable) {
 		t.Errorf("UpdateBuildVariable returned %+v, want %+v", variable, want)
 	}

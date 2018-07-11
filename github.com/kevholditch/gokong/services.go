@@ -10,30 +10,30 @@ type ServiceClient struct {
 }
 
 type ServiceRequest struct {
-	Name           *string `json:"name"`
-	Protocol       *string `json:"protocol"`
-	Host           *string `json:"host"`
-	Port           *int    `json:"port,omitempty"`
-	Path           *string `json:"path,omitempty"`
-	Retries        *int    `json:"retries,omitempty"`
-	ConnectTimeout *int    `json:"connect_timeout,omitempty"`
-	WriteTimeout   *int    `json:"write_timeout,omitempty"`
-	ReadTimeout    *int    `json:"read_timeout,omitempty"`
+	Name           string `json:"name"`
+	Protocol       string `json:"protocol"`
+	Host           string `json:"host"`
+	Port           int    `json:"port,omitempty"`
+	Path           string `json:"path,omitempty"`
+	Retries        int    `json:"retries,omitempty"`
+	ConnectTimeout int    `json:"connect_timeout,omitempty"`
+	WriteTimeout   int    `json:"write_timeout,omitempty"`
+	ReadTimeout    int    `json:"read_timeout,omitempty"`
 }
 
 type Service struct {
-	Id             *string `json:"id"`
-	CreatedAt      *int    `json:"created_at"`
-	UpdatedAt      *int    `json:"updated_at"`
-	Protocol       *string `json:"protocol"`
-	Host           *string `json:"host"`
-	Port           *int    `json:"port"`
-	Path           *string `json:"path"`
-	Name           *string `json:"name"`
-	Retries        *int    `json:"retries"`
-	ConnectTimeout *int    `json:"connect_timeout"`
-	WriteTimeout   *int    `json:"write_timeout"`
-	ReadTimeout    *int    `json:"read_timeout"`
+	Id             string `json:"id"`
+	CreatedAt      int    `json:"created_at"`
+	UpdatedAt      int    `json:"updated_at"`
+	Protocol       string `json:"protocol"`
+	Host           string `json:"host"`
+	Port           int    `json:"int"`
+	Path           string `json:"path"`
+	Name           string `json:"name"`
+	Retries        int    `json:"retries"`
+	ConnectTimeout int    `json:"connect_timeout"`
+	WriteTimeout   int    `json:"write_timeout"`
+	ReadTimeout    int    `json:"read_timeout"`
 }
 
 type Services struct {
@@ -50,27 +50,27 @@ const ServicesPath = "/services/"
 
 func (serviceClient *ServiceClient) AddService(serviceRequest *ServiceRequest) (*Service, error) {
 
-	if serviceRequest.Port == nil {
-		serviceRequest.Port = Int(80)
+	if serviceRequest.Port == 0 {
+		serviceRequest.Port = 80
 	}
 
-	if serviceRequest.Retries == nil {
-		serviceRequest.Retries = Int(5)
+	if serviceRequest.Retries == 0 {
+		serviceRequest.Retries = 5
 	}
 
-	if serviceRequest.ConnectTimeout == nil {
-		serviceRequest.ConnectTimeout = Int(60000)
+	if serviceRequest.ConnectTimeout == 0 {
+		serviceRequest.ConnectTimeout = 60000
 	}
 
-	if serviceRequest.ReadTimeout == nil {
-		serviceRequest.ReadTimeout = Int(60000)
+	if serviceRequest.ReadTimeout == 0 {
+		serviceRequest.ReadTimeout = 60000
 	}
 
-	if serviceRequest.Retries == nil {
-		serviceRequest.Retries = Int(60000)
+	if serviceRequest.Retries == 0 {
+		serviceRequest.Retries = 60000
 	}
 
-	_, body, errs := newPost(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Send(serviceRequest).End()
+	_, body, errs := NewRequest(serviceClient.config).Post(serviceClient.config.HostAddress + ServicesPath).Send(serviceRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the service, error: %v", errs)
 	}
@@ -81,7 +81,7 @@ func (serviceClient *ServiceClient) AddService(serviceRequest *ServiceRequest) (
 		return nil, fmt.Errorf("could not parse service get response, error: %v", err)
 	}
 
-	if createdService.Id == nil {
+	if createdService.Id == "" {
 		return nil, fmt.Errorf("could not register the service, error: %v", body)
 	}
 
@@ -101,7 +101,7 @@ func (serviceClient *ServiceClient) GetServiceFromRouteId(id string) (*Service, 
 }
 
 func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error) {
-	_, body, errs := newGet(serviceClient.config, endpoint).End()
+	_, body, errs := NewRequest(serviceClient.config).Get(endpoint).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get the service, error: %v", errs)
 	}
@@ -110,10 +110,6 @@ func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error
 	err := json.Unmarshal([]byte(body), service)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse service get response, error: %v", err)
-	}
-
-	if service.Id == nil {
-		return nil, nil
 	}
 
 	return service, nil
@@ -132,7 +128,7 @@ func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*S
 	}
 
 	for {
-		_, body, errs := newGet(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Query(query).End()
+		_, body, errs := NewRequest(serviceClient.config).Get(serviceClient.config.HostAddress + ServicesPath).Query(query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the service, error: %v", errs)
 		}
@@ -167,7 +163,7 @@ func (serviceClient *ServiceClient) UpdateServicebyRouteId(id string, serviceReq
 }
 
 func (serviceClient *ServiceClient) updateService(endpoint string, serviceRequest *ServiceRequest) (*Service, error) {
-	_, body, errs := newPatch(serviceClient.config, endpoint).Send(serviceRequest).End()
+	_, body, errs := NewRequest(serviceClient.config).Patch(endpoint).Send(serviceRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update service, error: %v", errs)
 	}
@@ -178,7 +174,7 @@ func (serviceClient *ServiceClient) updateService(endpoint string, serviceReques
 		return nil, fmt.Errorf("could not parse service update response, error: %v", err)
 	}
 
-	if updatedService.Id == nil {
+	if updatedService.Id == "" {
 		return nil, fmt.Errorf("could not update service, error: %v", body)
 	}
 
@@ -190,7 +186,7 @@ func (serviceClient *ServiceClient) DeleteServiceByName(name string) error {
 }
 
 func (serviceClient *ServiceClient) DeleteServiceById(id string) error {
-	res, _, errs := newDelete(serviceClient.config, serviceClient.config.HostAddress+ServicesPath+id).End()
+	res, _, errs := NewRequest(serviceClient.config).Delete(serviceClient.config.HostAddress + ServicesPath + id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the service, result: %v error: %v", res, errs)
 	}

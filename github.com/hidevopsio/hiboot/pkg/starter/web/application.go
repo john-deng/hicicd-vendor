@@ -27,6 +27,8 @@ import (
 	"github.com/kataras/iris/core/router"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/middleware/i18n"
+	"github.com/kataras/iris/middleware/logger"
+	"github.com/hidevopsio/hiboot/pkg/inject"
 	"github.com/hidevopsio/hiboot/pkg/system"
 	"github.com/hidevopsio/hiboot/pkg/utils"
 	"github.com/hidevopsio/hiboot/pkg/log"
@@ -50,7 +52,6 @@ type ApplicationInterface interface {
 	Run()
 }
 
-type DataSources map[string]interface{}
 
 type Application struct {
 	app    *iris.Application
@@ -58,8 +59,8 @@ type Application struct {
 	jwtEnabled bool
 	workDir string
 	httpMethods []string
-	dataSources DataSources
-	inject Inject
+	dataSources map[string]interface{}
+	instances map[string]interface{}
 }
 
 type Health struct {
@@ -143,10 +144,10 @@ func (wa *Application) Init(controllers ...interface{}) error {
 	}
 
 	// Init DataSource
-	if len(wa.config.DataSources) != 0 {
+	if wa.config != nil && len(wa.config.DataSources) != 0 {
 		factory := db.DataSourceFactory{}
 		dataSources := wa.config.DataSources
-		wa.dataSources = make(DataSources)
+		wa.dataSources = make(map[string]interface{})
 		for _, dataSourceConfig := range dataSources {
 			dataSourceType := dataSourceConfig["type"].(string)
 			//log.Debug(dataSourceType)
@@ -161,6 +162,8 @@ func (wa *Application) Init(controllers ...interface{}) error {
 		}
 	}
 
+	wa.instances = make(map[string]interface{})
+
 	// Init JWT
 	err = InitJwt(wa.workDir)
 	if err != nil {
@@ -171,6 +174,31 @@ func (wa *Application) Init(controllers ...interface{}) error {
 	}
 
 	wa.app = iris.New()
+
+	customLogger := logger.New(logger.Config{
+		// Status displays status code
+		Status: true,
+		// IP displays request's remote address
+		IP: true,
+		// Method displays the http method
+		Method: true,
+		// Path displays the request path
+		Path: true,
+		// Query appends the url query to the Path.
+		//Query: true,
+
+		//Columns: true,
+
+		// if !empty then its contents derives from `ctx.Values().Get("logger_message")
+		// will be added to the logs.
+		MessageContextKeys: []string{"logger_message"},
+
+		// if !empty then its contents derives from `ctx.GetHeader("User-Agent")
+		MessageHeaderKeys: []string{"User-Agent"},
+	})
+
+	wa.app.Use(customLogger)
+
 
 	// The only one Required:
 	// here is how you define how your own context will
@@ -220,7 +248,6 @@ func (wa *Application) Init(controllers ...interface{}) error {
 }
 
 func (wa *Application) initLocale() error {
-	var localeFiles []string
 	// TODO: localePath should be configurable in application.yml
 	// locale:
 	//   en-US: ./config/i18n/en-US.ini
@@ -228,23 +255,37 @@ func (wa *Application) initLocale() error {
 	// TODO: or
 	// locale:
 	//   path: ./config/i18n/
-	localePath := "./config/i18n/"
+	localePath := "config/i18n/"
 	if utils.IsPathNotExist(localePath) {
 		return &system.NotFoundError{Name: localePath}
 	}
 
-	err := filepath.Walk(localePath, utils.Visit(&localeFiles))
+	// parse language files
+	languages := make(map[string]string)
+	err := filepath.Walk(localePath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Fatal(err)
+		}
+		//*files = append(*files, path)
+		lng := strings.Replace(path, localePath,"", 1)
+		lng = utils.BaseDir(lng)
+		lng = utils.Basename(lng)
+
+		if lng != "" && path != localePath + lng {
+			//languages[lng] = path
+			if languages[lng] == "" {
+				languages[lng] = path
+			} else {
+				languages[lng] = languages[lng] + ", " + path
+			}
+			//log.Debugf("%v, %v", lng, languages[lng])
+		}
+		return nil
+	})
 	if err != nil {
 		return err
 	}
-	languages := make(map[string]string)
-	for _, file := range localeFiles {
-		basename := utils.Basename(file)
-		lng := utils.Filename(basename)
-		if lng != "" {
-			languages[lng] = file
-		}
-	}
+
 	globalLocale := i18n.New(i18n.Config{
 		Default:      "en-US",
 		URLParameter: "lang",
@@ -289,7 +330,7 @@ func (wa *Application) register(controllers []interface{}, auths... string) erro
 		}
 
 		// inject component
-		err := wa.inject.IntoObject(field, wa.dataSources)
+		err := inject.IntoObject(field, wa.dataSources, wa.instances)
 		if err != nil {
 			return err
 		}

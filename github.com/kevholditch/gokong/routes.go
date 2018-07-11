@@ -10,12 +10,12 @@ type RouteClient struct {
 }
 
 type RouteRequest struct {
-	Protocols    []*string           `json:"protocols"`
-	Methods      []*string           `json:"methods,omitempty"`
-	Hosts        []*string           `json:"hosts,omitempty"`
-	Paths        []*string           `json:"paths,omitempty"`
-	StripPath    *bool               `json:"strip_path,omitempty"`
-	PreserveHost *bool               `json:"preserve_host,omitempty"`
+	Protocols    []string            `json:"protocols"`
+	Methods      []string            `json:"methods,omitempty"`
+	Hosts        []string            `json:"hosts,omitempty"`
+	Paths        []string            `json:"paths,omitempty"`
+	StripPath    bool                `json:"strip_path,omitempty"`
+	PreserveHost bool                `json:"preserve_host,omitempty"`
 	Service      *RouteServiceObject `json:"service"`
 }
 
@@ -24,23 +24,23 @@ type RouteServiceObject struct {
 }
 
 type Route struct {
-	Id            *string             `json:"id"`
-	CreatedAt     *int                `json:"created_at"`
-	UpdatedAt     *int                `json:"updated_at"`
-	Protocols     []*string           `json:"protocols"`
-	Methods       []*string           `json:"methods"`
-	Hosts         []*string           `json:"hosts"`
-	Paths         []*string           `json:"paths"`
-	RegexPriority *int                `json:"regex_priority"`
-	StripPath     *bool               `json:"strip_path"`
-	PreserveHost  *bool               `json:"preserve_host"`
-	Service       *RouteServiceObject `json:"service"`
+	Id            string             `json:"id"`
+	CreatedAt     int                `json:"created_at"`
+	UpdatedAt     int                `json:"updated_at"`
+	Protocols     *[]string          `json:"protocols"`
+	Methods       *[]string          `json:"methods"`
+	Hosts         *[]string          `json:"hosts"`
+	Paths         *[]string          `json:"paths"`
+	RegexPriority int                `json:"regex_priority"`
+	StripPath     bool               `json:"strip_path"`
+	PreserveHost  bool               `json:"preserve_host"`
+	Service       RouteServiceObject `json:"service"`
 }
 
 type Routes struct {
 	Data  []*Route `json:"data"`
 	Total int      `json:"total"`
-	Next  string   `json:"next"`
+	Next  *string  `json:"next"`
 }
 
 type RouteQueryString struct {
@@ -51,7 +51,7 @@ type RouteQueryString struct {
 const RoutesPath = "/routes/"
 
 func (routeClient *RouteClient) AddRoute(routeRequest *RouteRequest) (*Route, error) {
-	_, body, errs := newPost(routeClient.config, routeClient.config.HostAddress+RoutesPath).Send(routeRequest).End()
+	_, body, errs := NewRequest(routeClient.config).Post(routeClient.config.HostAddress + RoutesPath).Send(routeRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the route, error: %v", errs)
 	}
@@ -62,7 +62,7 @@ func (routeClient *RouteClient) AddRoute(routeRequest *RouteRequest) (*Route, er
 		return nil, fmt.Errorf("could not parse route get response, error: %v", err)
 	}
 
-	if createdRoute.Id == nil {
+	if createdRoute.Id == "" {
 		return nil, fmt.Errorf("could not register the route, error: %v", body)
 	}
 
@@ -70,7 +70,7 @@ func (routeClient *RouteClient) AddRoute(routeRequest *RouteRequest) (*Route, er
 }
 
 func (routeClient *RouteClient) GetRoute(id string) (*Route, error) {
-	_, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
+	_, body, errs := NewRequest(routeClient.config).Get(routeClient.config.HostAddress + RoutesPath + id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get the route, error: %v", errs)
 	}
@@ -79,10 +79,6 @@ func (routeClient *RouteClient) GetRoute(id string) (*Route, error) {
 	err := json.Unmarshal([]byte(body), route)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse route get response, error: %v", err)
-	}
-
-	if route.Id == nil {
-		return nil, nil
 	}
 
 	return route, nil
@@ -101,7 +97,7 @@ func (routeClient *RouteClient) GetRoutes(query *RouteQueryString) ([]*Route, er
 	}
 
 	for {
-		_, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath).Query(query).End()
+		_, body, errs := NewRequest(routeClient.config).Get(routeClient.config.HostAddress + RoutesPath).Query(query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the route, error: %v", errs)
 		}
@@ -113,7 +109,7 @@ func (routeClient *RouteClient) GetRoutes(query *RouteQueryString) ([]*Route, er
 
 		routes = append(routes, data.Data...)
 
-		if data.Next == "" {
+		if data.Next == nil || *data.Next == "" {
 			break
 		}
 
@@ -132,7 +128,7 @@ func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, err
 	data := &Routes{}
 
 	for {
-		_, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+fmt.Sprintf("/services/%s/routes", id)).End()
+		_, body, errs := NewRequest(routeClient.config).Get(routeClient.config.HostAddress + fmt.Sprintf("/services/%s/routes", id)).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the route, error: %v", errs)
 		}
@@ -144,7 +140,7 @@ func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, err
 
 		routes = append(routes, data.Data...)
 
-		if data.Next == "" {
+		if data.Next == nil || *data.Next == "" {
 			break
 		}
 
@@ -153,7 +149,7 @@ func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, err
 }
 
 func (routeClient *RouteClient) UpdateRoute(id string, routeRequest *RouteRequest) (*Route, error) {
-	_, body, errs := newPatch(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).Send(routeRequest).End()
+	_, body, errs := NewRequest(routeClient.config).Patch(routeClient.config.HostAddress + RoutesPath + id).Send(routeRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update route, error: %v", errs)
 	}
@@ -164,7 +160,7 @@ func (routeClient *RouteClient) UpdateRoute(id string, routeRequest *RouteReques
 		return nil, fmt.Errorf("could not parse route update response, error: %v", err)
 	}
 
-	if updatedRoute.Id == nil {
+	if updatedRoute.Id == "" {
 		return nil, fmt.Errorf("could not update route, error: %v", body)
 	}
 
@@ -172,7 +168,7 @@ func (routeClient *RouteClient) UpdateRoute(id string, routeRequest *RouteReques
 }
 
 func (routeClient *RouteClient) DeleteRoute(id string) error {
-	res, _, errs := newDelete(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
+	res, _, errs := NewRequest(routeClient.config).Delete(routeClient.config.HostAddress + RoutesPath + id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the route, result: %v error: %v", res, errs)
 	}

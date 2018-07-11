@@ -101,3 +101,18 @@ func Filename(s string) string {
 	}
 	return s
 }
+
+func BaseDir(s string) string {
+	n := strings.LastIndexByte(s, '/')
+	if n > 0 {
+		return s[:n]
+	}
+	return s
+}
+
+func EnsureWorkDir(path string) string  {
+	if ! strings.Contains(GetWorkDir(), path) {
+		ChangeWorkDir(path)
+	}
+	return GetWorkDir()
+}

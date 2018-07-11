@@ -19,22 +19,32 @@ import (
 	"strings"
 )
 
+const EmptyString  = ""
+
+// UpperFirst upper case first character of specific string
 func UpperFirst(str string) string {
 	return strings.Title(str)
 }
 
+// LowerFirst lower case first character of specific string
 func LowerFirst(str string) string {
 	for i, v := range str {
 		return string(unicode.ToLower(v)) + str[i+1:]
 	}
-	return ""
+	return EmptyString
 }
 
+
+// StringInSlice check if specific string is in slice
 func StringInSlice(a string, list []string) bool {
+
+	var retVal bool
+
 	for _, b := range list {
 		if b == a {
-			return true
+			retVal = true
+			break
 		}
 	}
-	return false
+	return retVal
 }

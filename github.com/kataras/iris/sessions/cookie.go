@@ -1,6 +1,7 @@
 package sessions
 
 import (
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -26,13 +27,10 @@ func GetCookie(ctx context.Context, name string) string {
 	}
 
 	return c.Value
-
-	// return ctx.GetCookie(name)
 }
 
 // AddCookie adds a cookie
 func AddCookie(ctx context.Context, cookie *http.Cookie, reclaim bool) {
-	// http.SetCookie(ctx.ResponseWriter(), cookie)
 	if reclaim {
 		ctx.Request().AddCookie(cookie)
 	}
@@ -65,7 +63,7 @@ func RemoveCookie(ctx context.Context, config Config) {
 // IsValidCookieDomain returns true if the receiver is a valid domain to set
 // valid means that is recognised as 'domain' by the browser, so it(the cookie) can be shared with subdomains also
 func IsValidCookieDomain(domain string) bool {
-	if domain == "0.0.0.0" || domain == "127.0.0.1" {
+	if net.IP([]byte(domain)).IsLoopback() {
 		// for these type of hosts, we can't allow subdomains persistence,
 		// the web browser doesn't understand the mysubdomain.0.0.0.0 and mysubdomain.127.0.0.1 mysubdomain.32.196.56.181. as scorrectly ubdomains because of the many dots
 		// so don't set a cookie domain here, let browser handle this
@@ -107,21 +105,14 @@ func formatCookieDomain(ctx context.Context, disableSubdomainPersistence bool) s
 	}
 
 	// RFC2109, we allow level 1 subdomains, but no further
-	// if we have localhost.com , we want the localhost.cos.
+	// if we have localhost.com , we want the localhost.com.
 	// so if we have something like: mysubdomain.localhost.com we want the localhost here
 	// if we have mysubsubdomain.mysubdomain.localhost.com we want the .mysubdomain.localhost.com here
 	// slow things here, especially the 'replace' but this is a good and understable( I hope) way to get the be able to set cookies from subdomains & domain with 1-level limit
-	if dotIdx := strings.LastIndexByte(requestDomain, '.'); dotIdx > 0 {
+	if dotIdx := strings.IndexByte(requestDomain, '.'); dotIdx > 0 {
 		// is mysubdomain.localhost.com || mysubsubdomain.mysubdomain.localhost.com
-		s := requestDomain[0:dotIdx] // set mysubdomain.localhost || mysubsubdomain.mysubdomain.localhost
-		if secondDotIdx := strings.LastIndexByte(s, '.'); secondDotIdx > 0 {
-			//is mysubdomain.localhost ||  mysubsubdomain.mysubdomain.localhost
-			s = s[secondDotIdx+1:] // set to localhost || mysubdomain.localhost
-		}
-		// replace the s with the requestDomain before the domain's siffux
-		subdomainSuff := strings.LastIndexByte(requestDomain, '.')
-		if subdomainSuff > len(s) { // if it is actual exists as subdomain suffix
-			requestDomain = strings.Replace(requestDomain, requestDomain[0:subdomainSuff], s, 1) // set to localhost.com || mysubdomain.localhost.com
+		if strings.IndexByte(requestDomain[dotIdx+1:], '.') > 0 {
+			requestDomain = requestDomain[dotIdx+1:]
 		}
 	}
 	// finally set the .localhost.com (for(1-level) || .mysubdomain.localhost.com (for 2-level subdomain allow)

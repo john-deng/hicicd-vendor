@@ -1,9 +1,8 @@
 package gokong
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func Test_GetStatus(t *testing.T) {

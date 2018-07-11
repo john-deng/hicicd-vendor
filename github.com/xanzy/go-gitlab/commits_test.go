@@ -13,10 +13,16 @@ func TestGetCommitStatuses(t *testing.T) {
 
 	mux.HandleFunc("/projects/1/repository/commits/b0b3a907f41409829b307a28b82fdbd552ee5a27/statuses", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
+		testFormValues(t, r, values{
+			"ref":   "master",
+			"stage": "test",
+			"name":  "ci/jenkins",
+			"all":   "true",
+		})
 		fmt.Fprint(w, `[{"id":1}]`)
 	})
 
-	opt := &GetCommitStatusesOptions{Ref: String("master"), Stage: String("test"), Name: String("ci/jenkins"), All: Bool(true)}
+	opt := &GetCommitStatusesOptions{String("master"), String("test"), String("ci/jenkins"), Bool(true)}
 	statuses, _, err := client.Commits.GetCommitStatuses("1", "b0b3a907f41409829b307a28b82fdbd552ee5a27", opt)
 
 	if err != nil {
@@ -35,10 +41,18 @@ func TestSetCommitStatus(t *testing.T) {
 
 	mux.HandleFunc("/projects/1/statuses/b0b3a907f41409829b307a28b82fdbd552ee5a27", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
+		testJSONBody(t, r, values{
+			"state":       "running",
+			"context":     "",
+			"ref":         "master",
+			"name":        "ci/jenkins",
+			"target_url":  "http://abc",
+			"description": "build",
+		})
 		fmt.Fprint(w, `{"id":1}`)
 	})
 
-	opt := &SetCommitStatusOptions{State: Running, Ref: String("master"), Name: String("ci/jenkins"), Context: String(""), TargetURL: String("http://abc"), Description: String("build")}
+	opt := &SetCommitStatusOptions{Running, String("master"), String("ci/jenkins"), String(""), String("http://abc"), String("build")}
 	status, _, err := client.Commits.SetCommitStatus("1", "b0b3a907f41409829b307a28b82fdbd552ee5a27", opt)
 
 	if err != nil {

@@ -57,4 +57,28 @@ type (
 	//
 	// A shortcut for the `core/router#Party`, useful when `PartyFunc` is being used.
 	Party = router.Party
+
+	// ExecutionRules gives control to the execution of the route handlers outside of the handlers themselves.
+	// Usage:
+	// Party#SetExecutionRules(ExecutionRules {
+	//   Done: ExecutionOptions{Force: true},
+	// })
+	//
+	// See `core/router/Party#SetExecutionRules` for more.
+	// Example: https://github.com/kataras/iris/tree/master/_examples/mvc/middleware/without-ctx-next
+	ExecutionRules = router.ExecutionRules
+	// ExecutionOptions is a set of default behaviors that can be changed in order to customize the execution flow of the routes' handlers with ease.
+	//
+	// See `ExecutionRules` and `core/router/Party#SetExecutionRules` for more.
+	ExecutionOptions = router.ExecutionOptions
+
+	// CookieOption is the type of function that is accepted on
+	// context's methods like `SetCookieKV`, `RemoveCookie` and `SetCookie`
+	// as their (last) variadic input argument to amend the end cookie's form.
+	//
+	// Any custom or built'n `CookieOption` is valid,
+	// see `CookiePath`, `CookieCleanPath`, `CookieExpires` and `CookieHTTPOnly` for more.
+	//
+	// An alias for the `context/Context#CookieOption`.
+	CookieOption = context.CookieOption
 )

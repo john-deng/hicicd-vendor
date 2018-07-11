@@ -10,37 +10,37 @@ type ApiClient struct {
 }
 
 type ApiRequest struct {
-	Name                   *string   `json:"name"`
-	Hosts                  []*string `json:"hosts,omitempty"`
-	Uris                   []*string `json:"uris,omitempty"`
-	Methods                []*string `json:"methods,omitempty"`
-	UpstreamUrl            *string   `json:"upstream_url"`
-	StripUri               *bool     `json:"strip_uri"`
-	PreserveHost           *bool     `json:"preserve_host"`
-	Retries                *int      `json:"retries,omitempty"`
-	UpstreamConnectTimeout *int      `json:"upstream_connect_timeout,omitempty"`
-	UpstreamSendTimeout    *int      `json:"upstream_send_timeout,omitempty"`
-	UpstreamReadTimeout    *int      `json:"upstream_read_timeout,omitempty"`
-	HttpsOnly              *bool     `json:"https_only"`
-	HttpIfTerminated       *bool     `json:"http_if_terminated"`
+	Name                   string   `json:"name"`
+	Hosts                  []string `json:"hosts,omitempty"`
+	Uris                   []string `json:"uris,omitempty"`
+	Methods                []string `json:"methods,omitempty"`
+	UpstreamUrl            string   `json:"upstream_url"`
+	StripUri               bool     `json:"strip_uri"`
+	PreserveHost           bool     `json:"preserve_host"`
+	Retries                string   `json:"retries,omitempty"`
+	UpstreamConnectTimeout int      `json:"upstream_connect_timeout,omitempty"`
+	UpstreamSendTimeout    int      `json:"upstream_send_timeout,omitempty"`
+	UpstreamReadTimeout    int      `json:"upstream_read_timeout,omitempty"`
+	HttpsOnly              bool     `json:"https_only"`
+	HttpIfTerminated       bool     `json:"http_if_terminated"`
 }
 
 type Api struct {
-	Id                     *string   `json:"id"`
-	CreatedAt              *int      `json:"created_at"`
-	Name                   *string   `json:"name"`
-	Hosts                  []*string `json:"hosts,omitempty"`
-	Uris                   []*string `json:"uris,omitempty"`
-	Methods                []*string `json:"methods,omitempty"`
-	UpstreamUrl            *string   `json:"upstream_url"`
-	StripUri               *bool     `json:"strip_uri,omitempty"`
-	PreserveHost           *bool     `json:"preserve_host,omitempty"`
-	Retries                *int      `json:"retries,omitempty"`
-	UpstreamConnectTimeout *int      `json:"upstream_connect_timeout,omitempty"`
-	UpstreamSendTimeout    *int      `json:"upstream_send_timeout,omitempty"`
-	UpstreamReadTimeout    *int      `json:"upstream_read_timeout,omitempty"`
-	HttpsOnly              *bool     `json:"https_only,omitempty"`
-	HttpIfTerminated       *bool     `json:"http_if_terminated,omitempty"`
+	Id                     string   `json:"id"`
+	CreatedAt              int      `json:"created_at"`
+	Name                   string   `json:"name"`
+	Hosts                  []string `json:"hosts,omitempty"`
+	Uris                   []string `json:"uris,omitempty"`
+	Methods                []string `json:"methods,omitempty"`
+	UpstreamUrl            string   `json:"upstream_url"`
+	StripUri               bool     `json:"strip_uri,omitempty"`
+	PreserveHost           bool     `json:"preserve_host,omitempty"`
+	Retries                int      `json:"retries,omitempty"`
+	UpstreamConnectTimeout int      `json:"upstream_connect_timeout,omitempty"`
+	UpstreamSendTimeout    int      `json:"upstream_send_timeout,omitempty"`
+	UpstreamReadTimeout    int      `json:"upstream_read_timeout,omitempty"`
+	HttpsOnly              bool     `json:"https_only,omitempty"`
+	HttpIfTerminated       bool     `json:"http_if_terminated,omitempty"`
 }
 
 type Apis struct {
@@ -66,8 +66,7 @@ func (apiClient *ApiClient) GetByName(name string) (*Api, error) {
 }
 
 func (apiClient *ApiClient) GetById(id string) (*Api, error) {
-	_, body, errs := newGet(apiClient.config, apiClient.config.HostAddress+ApisPath+id).End()
-
+	_, body, errs := NewRequest(apiClient.config).Get(apiClient.config.HostAddress+ApisPath+id).Set("If-None-Match", `W/"wyzzy"`).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get api, error: %v", errs)
 	}
@@ -78,7 +77,7 @@ func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 		return nil, fmt.Errorf("could not parse api get response, error: %v", err)
 	}
 
-	if api.Id == nil {
+	if api.Id == "" {
 		return nil, nil
 	}
 
@@ -97,7 +96,7 @@ func (apiClient *ApiClient) ListFiltered(filter *ApiFilter) (*Apis, error) {
 		return nil, fmt.Errorf("could not build query string for apis filter, error: %v", err)
 	}
 
-	_, body, errs := newGet(apiClient.config, address).End()
+	_, body, errs := NewRequest(apiClient.config).Get(address).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get apis, error: %v", errs)
 	}
@@ -113,7 +112,7 @@ func (apiClient *ApiClient) ListFiltered(filter *ApiFilter) (*Apis, error) {
 
 func (apiClient *ApiClient) Create(newApi *ApiRequest) (*Api, error) {
 
-	_, body, errs := newPost(apiClient.config, apiClient.config.HostAddress+ApisPath).Send(newApi).End()
+	_, body, errs := NewRequest(apiClient.config).Post(apiClient.config.HostAddress + ApisPath).Send(newApi).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new api, error: %v", errs)
 	}
@@ -124,7 +123,7 @@ func (apiClient *ApiClient) Create(newApi *ApiRequest) (*Api, error) {
 		return nil, fmt.Errorf("could not parse api creation response, error: %v %s", err, body)
 	}
 
-	if createdApi.Id == nil {
+	if createdApi.Id == "" {
 		return nil, fmt.Errorf("could not create api, error: %v", body)
 	}
 
@@ -137,7 +136,7 @@ func (apiClient *ApiClient) DeleteByName(name string) error {
 
 func (apiClient *ApiClient) DeleteById(id string) error {
 
-	res, _, errs := newDelete(apiClient.config, apiClient.config.HostAddress+ApisPath+id).End()
+	res, _, errs := NewRequest(apiClient.config).Delete(apiClient.config.HostAddress + ApisPath + id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete api, result: %v error: %v", res, errs)
 	}
@@ -151,7 +150,7 @@ func (apiClient *ApiClient) UpdateByName(name string, apiRequest *ApiRequest) (*
 
 func (apiClient *ApiClient) UpdateById(id string, apiRequest *ApiRequest) (*Api, error) {
 
-	_, body, errs := newPatch(apiClient.config, apiClient.config.HostAddress+ApisPath+id).Send(apiRequest).End()
+	_, body, errs := NewRequest(apiClient.config).Patch(apiClient.config.HostAddress + ApisPath + id).Send(apiRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update api, error: %v", errs)
 	}
@@ -162,7 +161,7 @@ func (apiClient *ApiClient) UpdateById(id string, apiRequest *ApiRequest) (*Api,
 		return nil, fmt.Errorf("could not parse api update response, error: %v", err)
 	}
 
-	if updatedApi.Id == nil {
+	if updatedApi.Id == "" {
 		return nil, fmt.Errorf("could not update certificate, error: %v", body)
 	}
 

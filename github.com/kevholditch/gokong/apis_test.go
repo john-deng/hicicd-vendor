@@ -1,27 +1,26 @@
 package gokong
 
 import (
-	"testing"
-
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func Test_ApisGetById(t *testing.T) {
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -30,7 +29,7 @@ func Test_ApisGetById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	result, err := client.Apis().GetById(*createdApi.Id)
+	result, err := client.Apis().GetById(createdApi.Id)
 
 	assert.Equal(t, createdApi, result)
 
@@ -38,19 +37,19 @@ func Test_ApisGetById(t *testing.T) {
 
 func Test_ApisGetByName(t *testing.T) {
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -59,7 +58,7 @@ func Test_ApisGetByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	result, err := client.Apis().GetByName(*createdApi.Name)
+	result, err := client.Apis().GetByName(createdApi.Name)
 
 	assert.Equal(t, createdApi, result)
 
@@ -84,19 +83,19 @@ func Test_ApisGetNonExistentByName(t *testing.T) {
 func Test_ApisList(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"another.com"}),
-		Uris:                   StringSlice([]string{"/another"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/myservice"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(222),
-		UpstreamSendTimeout:    Int(233),
-		UpstreamReadTimeout:    Int(234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"another.com"},
+		Uris:                   []string{"/another"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -115,34 +114,34 @@ func Test_ApisList(t *testing.T) {
 func Test_ApisListFilteredById(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter1.com"}),
-		Uris:                   StringSlice([]string{"/filter"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/myservice"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 	apiRequest2 := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter2.com"}),
-		Uris:                   StringSlice([]string{"/filter2"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/myservice2"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice2",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -156,7 +155,7 @@ func Test_ApisListFilteredById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := client.Apis().ListFiltered(&ApiFilter{Id: *createdApi2.Id})
+	results, err := client.Apis().ListFiltered(&ApiFilter{Id: createdApi2.Id})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -170,34 +169,34 @@ func Test_ApisListFilteredById(t *testing.T) {
 func Test_ApisListFilteredByName(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter1.com"}),
-		Uris:                   StringSlice([]string{"/filter"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/myservice"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 	apiRequest2 := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter2.com"}),
-		Uris:                   StringSlice([]string{"/filter2"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/myservice2"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice2",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -211,7 +210,7 @@ func Test_ApisListFilteredByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := client.Apis().ListFiltered(&ApiFilter{Name: *createdApi2.Name})
+	results, err := client.Apis().ListFiltered(&ApiFilter{Name: createdApi2.Name})
 
 	assert.Nil(t, err)
 	assert.True(t, len(results.Results) == 1)
@@ -225,35 +224,34 @@ func Test_ApisListFilteredByName(t *testing.T) {
 func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter1.com"}),
-		Uris:                   StringSlice([]string{"/filter"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/someurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/someurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
-
 	apiRequest2 := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter2.com"}),
-		Uris:                   StringSlice([]string{"/filter2"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://upstreamunique:4140/uniqueurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://upstreamunique:4140/uniqueurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -267,7 +265,7 @@ func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := client.Apis().ListFiltered(&ApiFilter{UpstreamUrl: *createdApi2.UpstreamUrl})
+	results, err := client.Apis().ListFiltered(&ApiFilter{UpstreamUrl: createdApi2.UpstreamUrl})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -280,34 +278,34 @@ func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 func Test_ApisListFilteredByRetries(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter1.com"}),
-		Uris:                   StringSlice([]string{"/filter"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/someurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/someurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 	apiRequest2 := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter2.com"}),
-		Uris:                   StringSlice([]string{"/filter2"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/uniqueurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(1234),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/uniqueurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "1234",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -321,7 +319,7 @@ func Test_ApisListFilteredByRetries(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := client.Apis().ListFiltered(&ApiFilter{Retries: *createdApi2.Retries})
+	results, err := client.Apis().ListFiltered(&ApiFilter{Retries: createdApi2.Retries})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -334,35 +332,34 @@ func Test_ApisListFilteredByRetries(t *testing.T) {
 func Test_ApisListFilteredBySize(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter1.com"}),
-		Uris:                   StringSlice([]string{"/filter"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/someurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/someurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
-
 	apiRequest2 := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter2.com"}),
-		Uris:                   StringSlice([]string{"/filter2"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://upstreamunique:4140/uniqueurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/uniqueurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "1234",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -385,19 +382,19 @@ func Test_ApisListFilteredBySize(t *testing.T) {
 func Test_ApisCreate(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               false,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       false,
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Apis().Create(apiRequest)
@@ -421,7 +418,7 @@ func Test_ApisCreate(t *testing.T) {
 func Test_ApisCreateInvalid(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name: String("test-" + uuid.NewV4().String()),
+		Name: "test-" + uuid.NewV4().String(),
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Apis().Create(apiRequest)
@@ -432,9 +429,9 @@ func Test_ApisCreateInvalid(t *testing.T) {
 
 func Test_ApisCreateWithOnlyRequiredFields(t *testing.T) {
 	apiRequest := &ApiRequest{
-		Name:        String("test-" + uuid.NewV4().String()),
-		Hosts:       StringSlice([]string{"example.com"}),
-		UpstreamUrl: String("http://localhost:4140/testservice"),
+		Name:        "test-" + uuid.NewV4().String(),
+		Hosts:       []string{"example.com"},
+		UpstreamUrl: "http://localhost:4140/testservice",
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Apis().Create(apiRequest)
@@ -446,32 +443,32 @@ func Test_ApisCreateWithOnlyRequiredFields(t *testing.T) {
 	assert.Nil(t, result.Uris)
 	assert.Nil(t, result.Methods)
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
-	assert.Equal(t, 5, *result.Retries)
-	assert.Equal(t, true, *result.StripUri)
-	assert.Equal(t, false, *result.PreserveHost)
-	assert.Equal(t, 60000, *result.UpstreamConnectTimeout)
-	assert.Equal(t, 60000, *result.UpstreamSendTimeout)
-	assert.Equal(t, 60000, *result.UpstreamReadTimeout)
-	assert.Equal(t, false, *result.HttpsOnly)
-	assert.Equal(t, false, *result.HttpIfTerminated)
+	assert.Equal(t, 5, result.Retries)
+	assert.Equal(t, false, result.StripUri)
+	assert.Equal(t, false, result.PreserveHost)
+	assert.Equal(t, 60000, result.UpstreamConnectTimeout)
+	assert.Equal(t, 60000, result.UpstreamSendTimeout)
+	assert.Equal(t, 60000, result.UpstreamReadTimeout)
+	assert.Equal(t, false, result.HttpsOnly)
+	assert.Equal(t, false, result.HttpIfTerminated)
 }
 
 func Test_ApisDeleteById(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"delete.com"}),
-		Uris:                   StringSlice([]string{"/delete"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"delete.com"},
+		Uris:                   []string{"/delete"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -480,11 +477,11 @@ func Test_ApisDeleteById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	err = client.Apis().DeleteById(*createdApi.Id)
+	err = client.Apis().DeleteById(createdApi.Id)
 
 	assert.Nil(t, err)
 
-	deletedApi, err := client.Apis().GetById(*createdApi.Id)
+	deletedApi, err := client.Apis().GetById(createdApi.Id)
 	assert.Nil(t, err)
 	assert.Nil(t, deletedApi)
 
@@ -493,19 +490,19 @@ func Test_ApisDeleteById(t *testing.T) {
 func Test_ApisDeleteByName(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"delete.com"}),
-		Uris:                   StringSlice([]string{"/delete"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"delete.com"},
+		Uris:                   []string{"/delete"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                "3",
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -514,11 +511,11 @@ func Test_ApisDeleteByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	err = client.Apis().DeleteByName(*createdApi.Id)
+	err = client.Apis().DeleteByName(createdApi.Id)
 
 	assert.Nil(t, err)
 
-	deletedApi, err := client.Apis().GetById(*createdApi.Id)
+	deletedApi, err := client.Apis().GetById(createdApi.Id)
 	assert.Nil(t, err)
 	assert.Nil(t, deletedApi)
 
@@ -527,19 +524,19 @@ func Test_ApisDeleteByName(t *testing.T) {
 func Test_ApisUpdateApiById(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter1.com"}),
-		Uris:                   StringSlice([]string{"/filter"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/someurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/someurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -549,18 +546,18 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	apiRequest.Methods = StringSlice([]string{"GET"})
-	apiRequest.Name = String("kevin")
-	apiRequest.StripUri = Bool(true)
-	apiRequest.PreserveHost = Bool(true)
-	apiRequest.Retries = Int(10)
-	apiRequest.UpstreamConnectTimeout = Int(1000)
-	apiRequest.UpstreamSendTimeout = Int(4000)
-	apiRequest.UpstreamReadTimeout = Int(7000)
-	apiRequest.HttpsOnly = Bool(true)
-	apiRequest.HttpIfTerminated = Bool(true)
+	apiRequest.Methods = []string{"GET"}
+	apiRequest.Name = "kevin"
+	apiRequest.StripUri = true
+	apiRequest.PreserveHost = true
+	apiRequest.Retries = "10"
+	apiRequest.UpstreamConnectTimeout = 1000
+	apiRequest.UpstreamSendTimeout = 4000
+	apiRequest.UpstreamReadTimeout = 7000
+	apiRequest.HttpsOnly = true
+	apiRequest.HttpIfTerminated = true
 
-	result, err := client.Apis().UpdateById(*createdApi.Id, apiRequest)
+	result, err := client.Apis().UpdateById(createdApi.Id, apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -570,7 +567,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
 	assert.Equal(t, apiRequest.StripUri, result.StripUri)
 	assert.Equal(t, apiRequest.PreserveHost, result.PreserveHost)
-	assert.Equal(t, apiRequest.Retries, result.Retries)
+	assert.Equal(t, 10, result.Retries)
 	assert.Equal(t, apiRequest.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
 	assert.Equal(t, apiRequest.UpstreamSendTimeout, result.UpstreamSendTimeout)
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)
@@ -581,19 +578,19 @@ func Test_ApisUpdateApiById(t *testing.T) {
 func Test_ApisUpdateApiByName(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"filter1.com"}),
-		Uris:                   StringSlice([]string{"/filter"}),
-		Methods:                StringSlice([]string{"PUT", "POST"}),
-		UpstreamUrl:            String("http://linkerd:4140/someurl"),
-		StripUri:               Bool(false),
-		PreserveHost:           Bool(false),
-		Retries:                Int(5),
-		UpstreamConnectTimeout: Int(2222),
-		UpstreamSendTimeout:    Int(1233),
-		UpstreamReadTimeout:    Int(1234),
-		HttpsOnly:              Bool(false),
-		HttpIfTerminated:       Bool(false),
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/someurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                "5",
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -602,17 +599,17 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	apiRequest.Methods = StringSlice([]string{"POST"})
-	apiRequest.StripUri = Bool(true)
-	apiRequest.PreserveHost = Bool(true)
-	apiRequest.Retries = Int(3)
-	apiRequest.UpstreamConnectTimeout = Int(1000)
-	apiRequest.UpstreamSendTimeout = Int(888)
-	apiRequest.UpstreamReadTimeout = Int(234)
-	apiRequest.HttpsOnly = Bool(true)
-	apiRequest.HttpIfTerminated = Bool(true)
+	apiRequest.Methods = []string{"POST"}
+	apiRequest.StripUri = true
+	apiRequest.PreserveHost = true
+	apiRequest.Retries = "3"
+	apiRequest.UpstreamConnectTimeout = 1000
+	apiRequest.UpstreamSendTimeout = 888
+	apiRequest.UpstreamReadTimeout = 234
+	apiRequest.HttpsOnly = true
+	apiRequest.HttpIfTerminated = true
 
-	result, err := client.Apis().UpdateByName(*createdApi.Id, apiRequest)
+	result, err := client.Apis().UpdateByName(createdApi.Id, apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -622,7 +619,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
 	assert.Equal(t, apiRequest.StripUri, result.StripUri)
 	assert.Equal(t, apiRequest.PreserveHost, result.PreserveHost)
-	assert.Equal(t, apiRequest.Retries, result.Retries)
+	assert.Equal(t, 3, result.Retries)
 	assert.Equal(t, apiRequest.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
 	assert.Equal(t, apiRequest.UpstreamSendTimeout, result.UpstreamSendTimeout)
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)

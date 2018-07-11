@@ -9,10 +9,5 @@ app:
     - foo
 
 logging:
-  level: debug
+  level: info
 
-dataSources:
-- type: bolt
-  database: hi.db
-  mode: 0600
-  timeout: 1

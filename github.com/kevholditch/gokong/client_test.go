@@ -1,12 +1,11 @@
 package gokong
 
 import (
+	"github.com/kevholditch/gokong/containers"
+	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
-
-	"github.com/kevholditch/gokong/containers"
-	"github.com/stretchr/testify/assert"
 )
 
 const defaultKongVersion = "0.13.0"
@@ -27,11 +26,6 @@ func TestMain(m *testing.M) {
 	err := os.Setenv(EnvKongAdminHostAddress, testContext.KongHostAddress)
 	if err != nil {
 		log.Fatalf("Could not set kong host address env variable: %v", err)
-	}
-
-	err = os.Setenv(EnvKongApiHostAddress, testContext.KongApiHostAddress)
-	if err != nil {
-		log.Fatalf("Could not set kong api host address env variable: %v", err)
 	}
 
 	code := m.Run()

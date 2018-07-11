@@ -1,4 +1,4 @@
-# 更新记录 <a href="HISTORY.md"> <img width="20px" src="https://iris-go.com/images/flag-unitedkingdom.svg?v=10" /></a> <a href="HISTORY_GR.md"> <img width="20px" src="https://iris-go.com/images/flag-greece.svg?v=10" /></a>
+# 更新记录 <a href="HISTORY.md"> <img width="20px" src="https://iris-go.com/images/flag-unitedkingdom.svg?v=10" /></a> <a href="HISTORY_ID.md"> <img width="20px" src="https://iris-go.com/images/flag-indonesia.svg?v=10" /></a> <a href="HISTORY_GR.md"> <img width="20px" src="https://iris-go.com/images/flag-greece.svg?v=10" /></a>
 
 ### 想得到免费即时的支持?
 
@@ -16,6 +16,40 @@
 > Iris 使用 Golang 的 [vendor directory](https://docs.google.com/document/d/1Bz5-UB7g2uPBdOx-rw5t9MxJwkfpx90cqG9AFL0JAYo) 特性, 避免依赖包的更改带来影响。
 
 **如何升级**: 打开命令行执行以下命令: `go get -u github.com/kataras/iris` 或者等待自动更新。
+
+# Tu, 05 June 2018 | v10.6.6
+
+This history entry is not translated yet to the Chinese language yet, please refer to the english version of the [HISTORY entry](https://github.com/kataras/iris/blob/master/HISTORY.md#tu-05-june-2018--v1066) instead.
+
+# Mo, 21 May 2018 | v10.6.5
+
+This history entry is not translated yet to the Chinese language yet, please refer to the english version of the [HISTORY entry](https://github.com/kataras/iris/blob/master/HISTORY.md#mo-21-may-2018--v1065) instead.
+
+# We, 09 May 2018 | v10.6.4
+
+- [fix issue 995](https://github.com/kataras/iris/commit/62457279f41a1f157869a19ef35fb5198694fddb)
+- [fix issue 996](https://github.com/kataras/iris/commit/a11bb5619ab6b007dce15da9984a78d88cd38956)
+
+# We, 02 May 2018 | v10.6.3
+
+This history entry is not translated yet to the Chinese language yet, please refer to the english version of the [HISTORY entry](https://github.com/kataras/iris/blob/master/HISTORY.md#we-02-may-2018--v1063) instead.
+
+# Tu, 01 May 2018 | v10.6.2
+
+This history entry is not translated yet to the Chinese language yet, please refer to the english version of the [HISTORY entry](https://github.com/kataras/iris/blob/master/HISTORY.md#tu-01-may-2018--v1062) instead.
+
+# 2018 4月25日 | v10.6.1 版本更新
+
+- 用最新版 BoltDB 重新实现 session (`sessiondb`) 存储：[/sessions/sessiondb/boltdb/database.go](sessions/sessiondb/boltdb/database.go), 相关示例 [/_examples/sessions/database/boltdb/main.go](_examples/sessions/database/boltdb/main.go).
+- 修正 一个小问题 on [Badger sessiondb example](_examples/sessions/database/badger/main.go). `sessions.Config { Expires }` 字段由 `2 *time.Second` 调整为 `45 *time.Minute` .
+- badger sessiondb 其他小改进.
+
+# 2018 4月22日 | v10.6.0 版本更新
+
+- 修正 重定向问题 由 @wozz 提交: https://github.com/kataras/iris/pull/972.
+- 修正 无法销毁子域名 session 问题 由 @Chengyumeng 提交: https://github.com/kataras/iris/pull/964.
+- 添加 `OnDestroy(sid string)` 当 session 销毁时注册监听器 相关细节: https://github.com/kataras/iris/commit/d17d7fecbe4937476d00af7fda1c138c1ac6f34d.
+- sessions 现在与注册数据库完全同步。 这涉及到很多内部改动，但 **这不影响你当前项目代码**. 我们只保留了 `badger` 和 `redis` 作为底部支持。 相关细节: https://github.com/kataras/iris/commit/f2c3a5f0cef62099fd4d77c5ccb14f654ddbfb5c 
 
 # 2018 3月 24日 | v10.5.0 版本更新
 
@@ -36,10 +70,6 @@
 
 > 请记住，如果您无法升级，那么就不要这样做，我们在此版本中没有任何安全修复程序，但在某些时候建议您最好进行升级，我们总是会添加您喜欢的新功能！
 
-
-# Su, 22 April 2018 | v10.6.0
-
-This history entry is not translated yet to the Chinese language yet, please refer to the english version of the [HISTORY entry](https://github.com/kataras/iris/blob/master/HISTORY.md#su-22-april-2018--v1060) instead.
 
 # 2018 3月14日 | v10.4.0 版本更新
 

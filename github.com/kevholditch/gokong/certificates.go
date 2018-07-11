@@ -10,14 +10,14 @@ type CertificateClient struct {
 }
 
 type CertificateRequest struct {
-	Cert *string `json:"cert,omitempty"`
-	Key  *string `json:"key,omitempty"`
+	Cert string `json:"cert,omitempty"`
+	Key  string `json:"key,omitempty"`
 }
 
 type Certificate struct {
-	Id   *string `json:"id,omitempty"`
-	Cert *string `json:"cert,omitempty"`
-	Key  *string `json:"key,omitempty"`
+	Id   string `json:"id,omitempty"`
+	Cert string `json:"cert,omitempty"`
+	Key  string `json:"key,omitempty"`
 }
 
 type Certificates struct {
@@ -29,7 +29,7 @@ const CertificatesPath = "/certificates/"
 
 func (certificateClient *CertificateClient) GetById(id string) (*Certificate, error) {
 
-	_, body, errs := newGet(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath+id).End()
+	_, body, errs := NewRequest(certificateClient.config).Get(certificateClient.config.HostAddress + CertificatesPath + id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get certificate, error: %v", errs)
 	}
@@ -40,7 +40,7 @@ func (certificateClient *CertificateClient) GetById(id string) (*Certificate, er
 		return nil, fmt.Errorf("could not parse certificate get response, error: %v", err)
 	}
 
-	if certificate.Id == nil {
+	if certificate.Id == "" {
 		return nil, nil
 	}
 
@@ -49,7 +49,7 @@ func (certificateClient *CertificateClient) GetById(id string) (*Certificate, er
 
 func (certificateClient *CertificateClient) Create(certificateRequest *CertificateRequest) (*Certificate, error) {
 
-	_, body, errs := newPost(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath).Send(certificateRequest).End()
+	_, body, errs := NewRequest(certificateClient.config).Post(certificateClient.config.HostAddress + CertificatesPath).Send(certificateRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new certificate, error: %v", errs)
 	}
@@ -60,7 +60,7 @@ func (certificateClient *CertificateClient) Create(certificateRequest *Certifica
 		return nil, fmt.Errorf("could not parse certificate creation response, error: %v", err)
 	}
 
-	if createdCertificate.Id == nil {
+	if createdCertificate.Id == "" {
 		return nil, fmt.Errorf("could not create certificate, error: %v", body)
 	}
 
@@ -69,7 +69,7 @@ func (certificateClient *CertificateClient) Create(certificateRequest *Certifica
 
 func (certificateClient *CertificateClient) DeleteById(id string) error {
 
-	res, _, errs := newDelete(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath+id).End()
+	res, _, errs := NewRequest(certificateClient.config).Delete(certificateClient.config.HostAddress + CertificatesPath + id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete certificate, result: %v error: %v", res, errs)
 	}
@@ -79,7 +79,7 @@ func (certificateClient *CertificateClient) DeleteById(id string) error {
 
 func (certificateClient *CertificateClient) List() (*Certificates, error) {
 
-	_, body, errs := newGet(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath).End()
+	_, body, errs := NewRequest(certificateClient.config).Get(certificateClient.config.HostAddress + CertificatesPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get certificates, error: %v", errs)
 	}
@@ -95,7 +95,7 @@ func (certificateClient *CertificateClient) List() (*Certificates, error) {
 
 func (certificateClient *CertificateClient) UpdateById(id string, certificateRequest *CertificateRequest) (*Certificate, error) {
 
-	_, body, errs := newPatch(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath+id).Send(certificateRequest).End()
+	_, body, errs := NewRequest(certificateClient.config).Patch(certificateClient.config.HostAddress + CertificatesPath + id).Send(certificateRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update certificate, error: %v", errs)
 	}
@@ -106,7 +106,7 @@ func (certificateClient *CertificateClient) UpdateById(id string, certificateReq
 		return nil, fmt.Errorf("could not parse certificate update response, error: %v", err)
 	}
 
-	if updatedCertificate.Id == nil {
+	if updatedCertificate.Id == "" {
 		return nil, fmt.Errorf("could not update certificate, error: %v", body)
 	}
 

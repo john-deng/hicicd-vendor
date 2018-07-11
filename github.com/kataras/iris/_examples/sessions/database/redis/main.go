@@ -15,13 +15,13 @@ import (
 func main() {
 	// replace with your running redis' server settings:
 	db := redis.New(service.Config{
-		Network:     service.DefaultRedisNetwork,
-		Addr:        service.DefaultRedisAddr,
+		Network:     "tcp",
+		Addr:        "127.0.0.1:6379",
 		Password:    "",
 		Database:    "",
 		MaxIdle:     0,
 		MaxActive:   0,
-		IdleTimeout: service.DefaultRedisIdleTimeout,
+		IdleTimeout: time.Duration(5) * time.Minute,
 		Prefix:      ""}) // optionally configure the bridge between your redis server
 
 	// close connection when control+C/cmd+C
@@ -32,8 +32,10 @@ func main() {
 	defer db.Close() // close the database connection if application errored.
 
 	sess := sessions.New(sessions.Config{
-		Cookie:  "sessionscookieid",
-		Expires: 45 * time.Minute}, // <=0 means unlimited life. Defaults to 0.
+		Cookie:       "sessionscookieid",
+		Expires:      45 * time.Minute, // <=0 means unlimited life. Defaults to 0.
+		AllowReclaim: true,
+	},
 	)
 
 	//
@@ -64,6 +66,24 @@ func main() {
 
 		// test if setted here
 		ctx.Writef("All ok session value of the '%s' is: %s", key, s.GetString(key))
+	})
+
+	app.Get("/set/int/{key}/{value}", func(ctx iris.Context) {
+		key := ctx.Params().Get("key")
+		value, _ := ctx.Params().GetInt("value")
+		s := sess.Start(ctx)
+		// set session values
+		s.Set(key, value)
+		valueSet := s.Get(key)
+		// test if setted here
+		ctx.Writef("All ok session value of the '%s' is: %v", key, valueSet)
+	})
+
+	app.Get("/get/{key}", func(ctx iris.Context) {
+		key := ctx.Params().Get("key")
+		value := sess.Start(ctx).Get(key)
+
+		ctx.Writef("The '%s' on the /set was: %v", key, value)
 	})
 
 	app.Get("/get", func(ctx iris.Context) {
