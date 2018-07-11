@@ -25,16 +25,14 @@ import (
 // PipelinesService handles communication with the repositories related
 // methods of the GitLab API.
 //
-// GitLab API docs:
-// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html
 type PipelinesService struct {
 	client *Client
 }
 
 // Pipeline represents a GitLab pipeline.
 //
-// GitLab API docs:
-// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html
 type Pipeline struct {
 	ID         int    `json:"id"`
 	Status     string `json:"status"`
@@ -64,23 +62,51 @@ func (i Pipeline) String() string {
 	return Stringify(i)
 }
 
+// PipelineList represents a GitLab list project pipelines
+//
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html#list-project-pipelines
+type PipelineList []struct {
+	ID     int    `json:"id"`
+	Status string `json:"status"`
+	Ref    string `json:"ref"`
+	Sha    string `json:"sha"`
+}
+
+func (i PipelineList) String() string {
+	return Stringify(i)
+}
+
+// ListProjectPipelinesOptions represents the available ListProjectPipelines() options.
+//
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html#list-project-pipelines
+type ListProjectPipelinesOptions struct {
+	ListOptions
+	Scope      *string          `url:"scope,omitempty" json:"scope,omitempty"`
+	Status     *BuildStateValue `url:"status,omitempty" json:"status,omitempty"`
+	Ref        *string          `url:"ref,omitempty" json:"ref,omitempty"`
+	YamlErrors *bool            `url:"yaml_errors,omitempty" json:"yaml_errors,omitempty"`
+	Name       *string          `url:"name,omitempty" json:"name,omitempty"`
+	Username   *string          `url:"username,omitempty" json:"username,omitempty"`
+	OrderBy    *OrderByValue    `url:"order_by,omitempty" json:"order_by,omitempty"`
+	Sort       *string          `url:"sort,omitempty" json:"sort,omitempty"`
+}
+
 // ListProjectPipelines gets a list of project piplines.
 //
-// GitLab API docs:
-// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md#list-project-pipelines
-func (s *PipelinesService) ListProjectPipelines(pid interface{}, options ...OptionFunc) ([]*Pipeline, *Response, error) {
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html#list-project-pipelines
+func (s *PipelinesService) ListProjectPipelines(pid interface{}, opt *ListProjectPipelinesOptions, options ...OptionFunc) (PipelineList, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
 	}
 	u := fmt.Sprintf("projects/%s/pipelines", url.QueryEscape(project))
 
-	req, err := s.client.NewRequest("GET", u, nil, options)
+	req, err := s.client.NewRequest("GET", u, opt, options)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var p []*Pipeline
+	var p PipelineList
 	resp, err := s.client.Do(req, &p)
 	if err != nil {
 		return nil, resp, err
@@ -90,8 +116,7 @@ func (s *PipelinesService) ListProjectPipelines(pid interface{}, options ...Opti
 
 // GetPipeline gets a single project pipeline.
 //
-// GitLab API docs:
-// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md#get-a-single-pipeline
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html#get-a-single-pipeline
 func (s *PipelinesService) GetPipeline(pid interface{}, pipeline int, options ...OptionFunc) (*Pipeline, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
@@ -115,16 +140,14 @@ func (s *PipelinesService) GetPipeline(pid interface{}, pipeline int, options ..
 
 // CreatePipelineOptions represents the available CreatePipeline() options.
 //
-// GitLab API docs:
-// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md#create-a-new-pipeline
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html#create-a-new-pipeline
 type CreatePipelineOptions struct {
 	Ref *string `url:"ref,omitempty" json:"ref"`
 }
 
 // CreatePipeline creates a new project pipeline.
 //
-// GitLab API docs:
-// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md#create-a-new-pipeline
+// GitLab API docs: https://docs.gitlab.com/ce/api/pipelines.html#create-a-new-pipeline
 func (s *PipelinesService) CreatePipeline(pid interface{}, opt *CreatePipelineOptions, options ...OptionFunc) (*Pipeline, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
@@ -149,7 +172,7 @@ func (s *PipelinesService) CreatePipeline(pid interface{}, opt *CreatePipelineOp
 // RetryPipelineBuild retries failed builds in a pipeline
 //
 // GitLab API docs:
-// https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md#retry-failed-builds-in-a-pipeline
+// https://docs.gitlab.com/ce/api/pipelines.html#retry-failed-builds-in-a-pipeline
 func (s *PipelinesService) RetryPipelineBuild(pid interface{}, pipelineID int, options ...OptionFunc) (*Pipeline, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
@@ -174,7 +197,7 @@ func (s *PipelinesService) RetryPipelineBuild(pid interface{}, pipelineID int, o
 // CancelPipelineBuild cancels a pipeline builds
 //
 // GitLab API docs:
-//https://gitlab.com/gitlab-org/gitlab-ce/blob/8-16-stable/doc/api/pipelines.md#cancel-a-pipelines-builds
+//https://docs.gitlab.com/ce/api/pipelines.html#cancel-a-pipelines-builds
 func (s *PipelinesService) CancelPipelineBuild(pid interface{}, pipelineID int, options ...OptionFunc) (*Pipeline, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
